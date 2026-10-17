@@ -1,21 +1,15 @@
 package exercise
 
 import (
-	"embed"
+	_ "embed"
 	"io"
-	"io/fs"
 	"regexp"
 	"strings"
 
 	"tests-runner/exercises"
-
-	"tests-runner/util/util/errutil"
 )
 
 var (
-	//go:embed src/*
-	__auxSrc embed.FS
-
 	//go:embed "testdata/t00-exe"
 	t00exe string
 	//go:embed "testdata/t00-argv"
@@ -113,12 +107,8 @@ var (
 )
 
 func init() {
-	auxSrc, err := fs.Sub(__auxSrc, "src")
-	errutil.FatalIf(err)
-
 	exercises.RegisterExercise(exercises.Exercise{
 		Name:      "00-ps",
-		AuxSrc:    auxSrc,
 		Testcases: []exercises.Testcase{t00, t01, t02, t03},
 	})
 }

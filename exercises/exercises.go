@@ -36,13 +36,16 @@ type TestResult struct {
 var Exercises = make(map[string]Exercise)
 
 func RegisterExercise(e Exercise) {
+	e.findSources()
 	Exercises[e.Name] = e
 }
 
 type Exercise struct {
 	Name      string
-	AuxSrc    fs.FS
 	Testcases []Testcase
+
+	Lang   string
+	AuxSrc fs.FS
 }
 
 type Testcase struct {

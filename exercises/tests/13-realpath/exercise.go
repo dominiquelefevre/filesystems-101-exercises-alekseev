@@ -1,21 +1,14 @@
 package exercise
 
 import (
-	"embed"
 	"io"
-	"io/fs"
 	"regexp"
 	"strings"
 
 	"tests-runner/exercises"
-
-	"tests-runner/util/util/errutil"
 )
 
 var (
-	//go:embed src/*
-	__auxSrc embed.FS
-
 	t00F = exercises.ExpectedOutputFile{
 		Name:      "path",
 		IfMissing: "solution never called report_path()",
@@ -172,12 +165,8 @@ var (
 )
 
 func init() {
-	auxSrc, err := fs.Sub(__auxSrc, "src")
-	errutil.FatalIf(err)
-
 	exercises.RegisterExercise(exercises.Exercise{
-		Name:   "13-realpath",
-		AuxSrc: auxSrc,
+		Name: "13-realpath",
 		Testcases: []exercises.Testcase{t00, t01, t02, t03, t04, t05,
 			t06, t07, t08, t09, t10, t11, t12, t13},
 	})

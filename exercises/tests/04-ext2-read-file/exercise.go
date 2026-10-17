@@ -1,18 +1,12 @@
 package exercise
 
 import (
-	"embed"
-	"io/fs"
+	_ "embed"
 
 	"tests-runner/exercises"
-
-	"tests-runner/util/util/errutil"
 )
 
 var (
-	//go:embed src/*
-	__auxSrc embed.FS
-
 	//go:embed "testdata/506-hello"
 	t00dump  []byte
 	t00dumpF = exercises.ExpectedOutputFile{
@@ -51,28 +45,11 @@ var (
 		Args:            []string{"test", "016"},
 		ExpectedOutputs: []exercises.ExpectedOutputFile{t02dumpF},
 	}
-
-	//go:embed "testdata/015-sparse"
-	t03dump  []byte
-	t03dumpF = exercises.ExpectedOutputFile{
-		Name:      "dump",
-		IfMissing: "solution never created an output file",
-		Verifier:  exercises.BytesEqual(t03dump),
-	}
-	t03 = exercises.Testcase{
-		Name:            "03-sparse",
-		Args:            []string{"test", "015"},
-		ExpectedOutputs: []exercises.ExpectedOutputFile{t03dumpF},
-	}
 )
 
 func init() {
-	auxSrc, err := fs.Sub(__auxSrc, "src")
-	errutil.FatalIf(err)
-
 	exercises.RegisterExercise(exercises.Exercise{
-		Name:      "08-ext2-read-sparse-file",
-		AuxSrc:    auxSrc,
-		Testcases: []exercises.Testcase{t00, t01, t02, t03},
+		Name:      "04-ext2-read-file",
+		Testcases: []exercises.Testcase{t00, t01, t02},
 	})
 }

@@ -1,25 +1,15 @@
 package exercise
 
 import (
-	"embed"
 	"fmt"
-	"io/fs"
 	"strconv"
-
-	"tests-runner/util/util/errutil"
 
 	"tests-runner/exercises"
 )
 
-var (
-	//go:embed src/*
-	__auxSrc embed.FS
-)
+var ()
 
 func init() {
-	auxSrc, err := fs.Sub(__auxSrc, "src")
-	errutil.FatalIf(err)
-
 	testcases := make([]exercises.Testcase, 0)
 	for i := 0; i < 16; i++ {
 		// NOTE: random seeds must be odd so that test sequences
@@ -32,7 +22,6 @@ func init() {
 
 	exercises.RegisterExercise(exercises.Exercise{
 		Name:      "09-btree",
-		AuxSrc:    auxSrc,
 		Testcases: testcases,
 	})
 }

@@ -2,20 +2,13 @@ package exercise
 
 import (
 	"bytes"
-	"embed"
 	"fmt"
 	"io"
-	"io/fs"
 
 	"tests-runner/exercises"
-
-	"tests-runner/util/util/errutil"
 )
 
 var (
-	//go:embed src/*
-	__auxSrc embed.FS
-
 	testLengths = []int{
 		1024 * 1024,
 		4*1024*1024 - 4096,
@@ -29,9 +22,6 @@ var (
 )
 
 func init() {
-	auxSrc, err := fs.Sub(__auxSrc, "src")
-	errutil.FatalIf(err)
-
 	testcases := make([]exercises.Testcase, len(testLengths))
 	for i, len := range testLengths {
 		testcases[i] = exercises.Testcase{
@@ -48,7 +38,6 @@ func init() {
 
 	exercises.RegisterExercise(exercises.Exercise{
 		Name:      "03-io_uring",
-		AuxSrc:    auxSrc,
 		Testcases: testcases,
 	})
 }

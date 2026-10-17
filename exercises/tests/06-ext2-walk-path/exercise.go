@@ -1,18 +1,12 @@
 package exercise
 
 import (
-	"embed"
-	"io/fs"
+	_ "embed"
 
 	"tests-runner/exercises"
-
-	"tests-runner/util/util/errutil"
 )
 
 var (
-	//go:embed src/*
-	__auxSrc embed.FS
-
 	//go:embed "testdata/016-2ind"
 	t00dump  []byte
 	t00dumpF = exercises.ExpectedOutputFile{
@@ -67,12 +61,8 @@ var (
 )
 
 func init() {
-	auxSrc, err := fs.Sub(__auxSrc, "src")
-	errutil.FatalIf(err)
-
 	exercises.RegisterExercise(exercises.Exercise{
 		Name:      "06-ext2-walk-path",
-		AuxSrc:    auxSrc,
 		Testcases: []exercises.Testcase{t00, t01, t02, t03},
 	})
 }

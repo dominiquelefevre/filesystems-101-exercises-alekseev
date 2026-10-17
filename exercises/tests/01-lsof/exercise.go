@@ -2,9 +2,8 @@ package exercise
 
 import (
 	"bufio"
-	"embed"
+	_ "embed"
 	"io"
-	"io/fs"
 	"log"
 	"regexp"
 	"strings"
@@ -12,13 +11,9 @@ import (
 	"tests-runner/exercises"
 
 	"tests-runner/util/container/set"
-	"tests-runner/util/util/errutil"
 )
 
 var (
-	//go:embed src/*
-	__auxSrc embed.FS
-
 	//go:embed "testdata/t00-files"
 	t00files string
 
@@ -60,12 +55,8 @@ var (
 )
 
 func init() {
-	auxSrc, err := fs.Sub(__auxSrc, "src")
-	errutil.FatalIf(err)
-
 	exercises.RegisterExercise(exercises.Exercise{
 		Name:      "01-lsof",
-		AuxSrc:    auxSrc,
 		Testcases: []exercises.Testcase{t00, t01, t02},
 	})
 }
