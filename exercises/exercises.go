@@ -44,8 +44,9 @@ type Exercise struct {
 	Name      string
 	Testcases []Testcase
 
-	Lang   string
-	AuxSrc fs.FS
+	Lang       string
+	AuxSrc     fs.FS
+	RustAuxSrc fs.FS
 }
 
 type Testcase struct {
