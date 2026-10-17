@@ -93,29 +93,29 @@ func (vq *VerificationQueue) handleSubmission(ctx context.Context, repo *db.Repo
 
 	// 2. Update the solution to write output to a file.
 
-	solutionDir := path.Join(repoDir, s.ExerciseId)
-	if d, err := os.Open(solutionDir); err != nil {
+	solution := test.FindSolution(repoDir)
+	if solution == nil {
 		err = vq.report(ctx, s, &exercises.SubmissionResult{
 			Id:     s.Id,
-			Result: fmt.Sprintf("directory not found in the solution repo: %q", s.ExerciseId),
+			Result: fmt.Sprintf("directory not found in the solution repo: %q", path.Join(test.Lang, s.ExerciseId)),
 		})
 		return
-	} else {
-		d.Close()
 	}
+	log = log.WithField("lang", solution.Lang)
 
-	err = errutil.First(
-		copyDir(test.AuxSrc, solutionDir),
-		copyDir(exercises.AuxSrcStdlib, path.Join(repoDir, "stdlib")),
-	)
-	if err != nil {
-		err = errors.Wrap(err, "replaceCallbacks()")
-		return
+	for _, c := range solution.Copies {
+		if err = os.MkdirAll(c.Dst, 0700); err == nil {
+			err = copyDir(c.Src, c.Dst)
+		}
+		if err != nil {
+			err = errors.Wrap(err, "replaceCallbacks()")
+			return
+		}
 	}
 
 	// 3. Compile the solution.
 
-	exerciseDir := path.Join(repoDir, s.ExerciseId)
+	exerciseDir := solution.Dir
 
 	makeCmd := exec.Command("make", "build")
 	makeCmd.Dir = exerciseDir
