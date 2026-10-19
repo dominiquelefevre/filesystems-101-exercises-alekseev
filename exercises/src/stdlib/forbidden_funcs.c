@@ -71,4 +71,14 @@ off_t lseek(int fd, off_t offset, int whence)
 	exit(1);
 }
 
+off64_t lseek64(int fd, off64_t offset, int whence)
+{
+	(void) fd;
+	(void) offset;
+	(void) whence;
+
+	fprintf(stderr, "don't use lseek64(), use pread() and pwrite() instead");
+	exit(1);
+}
+
 #endif /* !defined(FUSE_USE_VERSION) */
