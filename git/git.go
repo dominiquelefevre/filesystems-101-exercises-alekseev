@@ -61,6 +61,22 @@ func Clean(repoDir string) (err error) {
 	return gitCommand(repoDir, "clean", "-q", "-f").Run()
 }
 
+func FirstVersion(repoDir, file string) (content []byte, found bool, err error) {
+	defer func() { err = errors.Wrapf(err, "git.FirstVersion(%q)", file) }()
+
+	out, err := gitCommand(repoDir, "log", "--diff-filter=A", "--format=%H", "--", file).Output()
+	if err != nil {
+		return nil, false, err
+	}
+	hashes := strings.Fields(string(out))
+	if len(hashes) == 0 {
+		return nil, false, nil
+	}
+
+	content, err = gitCommand(repoDir, "show", hashes[len(hashes)-1]+":"+file).Output()
+	return content, err == nil, err
+}
+
 func gitCommand(workDir string, args ...string) *exec.Cmd {
 	cmd := exec.Command("git", args...)
 	cmd.Dir = workDir
