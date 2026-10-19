@@ -93,19 +93,20 @@ func (vq *VerificationQueue) handleSubmission(ctx context.Context, repo *db.Repo
 
 	// 2. Update the solution to write output to a file.
 
-	solutionDir := path.Join(repoDir, s.ExerciseId)
-	if d, err := os.Open(solutionDir); err != nil {
+	solution, err := test.FindSolution(repoDir)
+	if problem := (errors.Error{}); errors.As(err, &problem) {
 		err = vq.report(ctx, s, &exercises.SubmissionResult{
 			Id:     s.Id,
-			Result: fmt.Sprintf("directory not found in the solution repo: %q", s.ExerciseId),
+			Result: problem.Message,
 		})
 		return
-	} else {
-		d.Close()
+	}
+	if err != nil {
+		return
 	}
 
 	err = errutil.First(
-		copyDir(test.AuxSrc, solutionDir),
+		copyDir(solution.AuxSrc, solution.Dir),
 		copyDir(exercises.AuxSrcStdlib, path.Join(repoDir, "stdlib")),
 	)
 	if err != nil {
@@ -115,10 +116,8 @@ func (vq *VerificationQueue) handleSubmission(ctx context.Context, repo *db.Repo
 
 	// 3. Compile the solution.
 
-	exerciseDir := path.Join(repoDir, s.ExerciseId)
-
-	makeCmd := exec.Command("make", "build")
-	makeCmd.Dir = exerciseDir
+	makeCmd := exec.Command("make", "-f", solution.Makefile, "build")
+	makeCmd.Dir = solution.Dir
 
 	compilerOutput, err := makeCmd.Output()
 	if exit := new(exec.ExitError); errors.As(err, &exit) && exit.ExitCode() != 0 {
@@ -138,7 +137,7 @@ func (vq *VerificationQueue) handleSubmission(ctx context.Context, repo *db.Repo
 
 	// 4. Finally, run tests.
 
-	result, err := test.Verify(ctx, s, exerciseDir)
+	result, err := test.Verify(ctx, s, solution.Dir)
 	if err != nil {
 		return
 	}
